@@ -44,9 +44,10 @@ pub async fn get_posts_by_date(pool: &DbPool, date: &str) -> Vec<Post> {
     let parsed_date = NaiveDate::parse_from_str(date, "%Y-%m-%d")
         .map_err(|e| sqlx::Error::Protocol(e.to_string())).unwrap();
     sqlx::query_as::<_, Post>(
-        "SELECT * FROM posts WHERE date(timestamp) = $1 ORDER BY timestamp DESC",
+        "SELECT * FROM posts WHERE DATE(timestamp AT TIME ZONE $2) = $1 ORDER BY timestamp DESC",
     )
     .bind(parsed_date)
+    .bind("Asia/Shanghai")
     .fetch_all(pool)
     .await
     .expect("Failed to fetch posts.")

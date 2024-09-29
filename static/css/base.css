@@ -54,6 +54,10 @@ li {
     text-align: left;
 }
 
+#posts {
+    min-height: 60vh;
+}
+
 .post-item {
     display: inline-block;
     cursor: default !important;
@@ -81,12 +85,6 @@ footer a,
 footer a:visited {
     color: #7f8c8d;
     text-decoration: underline;
-}
-
-#content {
-    min-height: 70vh;
-    position: relative;
-    height: 100%;
 }
 
 #loading {
@@ -119,12 +117,7 @@ footer a:visited {
 #pagination {
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 20px 0;
-    align-self: flex-end;
     margin-bottom: 0;
-    bottom: 0;
-    width: 100%;
 }
 
 #pagination a {
