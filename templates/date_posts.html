@@ -6,13 +6,14 @@
 {% endblock %}
 
 {% block content %}
-<div id='posts'></div>
+<div id="posts">
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
     LoadingManager.showLoading(['content', 'posts']);
-    prepareAllPostsPage();
+    prepareDatePostsPage();
     LoadingManager.hideLoading();
 </script>
 {% endblock %}

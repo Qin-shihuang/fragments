@@ -2,6 +2,22 @@ article {
     margin-bottom: 10px;
 }
 
+
+.post-header h2 {
+    float: left;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.post-header a {
+    float: right;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    cursor: pointer;
+    color: #3498db;
+    text-decoration: underline;
+}
+
 .post-content {
     font-size: 1.1em;
     margin-bottom: 10px;

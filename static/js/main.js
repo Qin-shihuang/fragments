@@ -1,12 +1,24 @@
-function preparePaginatedPage() {
+function preparePaginatedPostsPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page') || 1;
     const perPage = urlParams.get('per_page') || 20;
-    fetchAndDisplayPosts(page, perPage);
+    const source = `/api/posts?page=${page}&per_page=${perPage}`;
+    fetchAndDisplayPosts(source);
 }
 
-function fetchAndDisplayPosts(page, perPage) {
-    fetch(`/api/posts?page=${page}&per_page=${perPage}`)
+function prepareAllPostsPage() {
+    const source = '/api/posts?page=0&per_page=0'
+    fetchAndDisplayPosts(source);
+}
+
+function prepareDatePostsPage() {
+    const date = window.location.pathname.split('/').pop();
+    const source = `/api/posts/${date}`;
+    fetchAndDisplayPosts(source);
+}
+
+function fetchAndDisplayPosts(source) {
+    fetch(source)
         .then(response => response.json())
         .then(groupedPosts => {
             if (!groupedPosts || groupedPosts.length === 0) {
@@ -18,8 +30,19 @@ function fetchAndDisplayPosts(page, perPage) {
             postsDiv.innerHTML = '';
             groupedPosts.forEach(group => {
                 const dateHeader = document.createElement('h2');
-                dateHeader.textContent = group.date;
+                const hr = document.createElement('hr');
+                const target = `/date/${group.date}`
+                if (window.location.pathname !== target) {
+                    const dateLink = document.createElement('a');
+                    dateLink.href = target
+                    dateLink.textContent = group.date;
+                    dateLink.className = 'date-link';
+                    dateHeader.appendChild(dateLink);
+                } else {
+                    dateHeader.textContent = group.date;
+                }
                 postsDiv.appendChild(dateHeader);
+                postsDiv.appendChild(hr);
 
                 const ul = document.createElement('ul');
                 group.posts.forEach(post => ul.appendChild(createPostElement(post)));

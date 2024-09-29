@@ -22,7 +22,25 @@ h1 {
 h2 {
     color: #2980b9;
     margin-top: 20px;
-    border-bottom: 1px solid #bdc3c7;
+    margin-bottom: 0px;
+}
+
+hr {
+    margin-top: 0px;
+    margin-bottom: 30px;
+    border: 0;
+    border-top: 1px solid #bdc3c7;
+}
+
+.date-link {
+    color: inherit;
+    text-decoration: none;
+    cursor: default;
+}
+
+.date-link:hover {
+    text-decoration: none;
+    cursor: default;
 }
 
 ul {
@@ -103,7 +121,11 @@ footer p {
     width: 100%;
 }
 
-#pagination a,
+#pagination a {
+    margin: 0 10px;
+    color: #3498db;
+}
+
 #pagination span {
     margin: 0 10px;
 }

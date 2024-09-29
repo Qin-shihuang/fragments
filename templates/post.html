@@ -9,13 +9,23 @@
 {% block content %}
 {% if let Some(post) = post %}
 <article>
-    <h2>Post #{{ post.id }}</h2>
+    <div class="post-header">
+        <h2>Post #{{ post.id }}</h2>
+        <a href="{{ post.id }}/raw" class="view-raw">View Raw</a>
+        <br style="clear:both;" />
+    </div>
+    <hr>
     <p class="post-content">{{ post.sentence }}</p>
     <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time()) }}</p>
 </article>
 {% else %}
 <p>Post not found. -- Probably deleted or never existed.</p>
 {% endif %}
+
+<div class="go-back-container">
+    <a href="#" class="go-back" onclick="history.back(); return false;">Go back</a>
+</div>
+{% endblock %}
 
 {% block scripts %}
 <script>
@@ -24,9 +34,4 @@
         document.querySelector('.go-back').onclick = null;
     }
 </script>
-{% endblock %}
-
-<div class="go-back-container">
-    <a href="#" class="go-back" onclick="history.back(); return false;">Go back</a>
-</div>
 {% endblock %}

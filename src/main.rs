@@ -34,13 +34,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(|| async { Redirect::temporary("/paginated") }))
-        .route("/paginated", get(handler::paginated_posts))
         .route("/all", get(handler::all_posts))
+        .route("/paginated", get(handler::paginated_posts))
+        .route("/date/:date", get(handler::get_date_posts))        
         .route("/post/:id", get(handler::single_post))
+        .route("/post/:id/raw", get(handler::single_post_raw))
         .route("/add_post", get(handler::add_post_form))
         .route("/api/posts", get(handler::fetch_grouped_posts))
+        .route("/api/posts/:date", get(handler::fetch_date_posts))
         .route("/api/new_post", post(handler::new_post))
-        
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);

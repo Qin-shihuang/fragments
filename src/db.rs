@@ -35,7 +35,7 @@ pub async fn add_post(pool: &SqlitePool, sentence: &str) -> Result<i64, sqlx::Er
     Ok(result.last_insert_rowid())
 }
 
-pub async fn get_posts(pool: &SqlitePool) -> Vec<Post> {
+pub async fn get_all_posts(pool: &SqlitePool) -> Vec<Post> {
     sqlx::query_as::<_, Post>("SELECT * FROM posts ORDER BY timestamp DESC")
         .fetch_all(pool)
         .await
@@ -52,6 +52,7 @@ pub async fn get_posts_by_page(pool: &SqlitePool, page: i64, posts_per_page: i64
 }
 
 pub async fn get_posts_by_date(pool: &SqlitePool, date: &str) -> Vec<Post> {
+    // date is a string in the format "YYYY-MM-DD"
     sqlx::query_as::<_, Post>(
         "SELECT * FROM posts WHERE date(timestamp) = ? ORDER BY timestamp DESC",
     )
