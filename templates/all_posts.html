@@ -2,6 +2,7 @@
 
 {% block head %}
 <script src="/static/js/main.js"></script>
+<script src="/static/js/loading.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -10,6 +11,8 @@
 
 {% block scripts %}
 <script>
+    LoadingManager.showLoading(['content', 'posts']);
     fetchAndDisplayPosts(0, 0);
+    LoadingManager.hideLoading();
 </script>
 {% endblock %}

@@ -12,6 +12,9 @@
 
 <body>
     <h1>Fragments</h1>
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
     <div id="content">
         {% block content %}{% endblock %}
     </div>
@@ -19,6 +22,9 @@
     <footer>
         <p>
             Fragments of {{name}}<{{email}}>
+        </p>
+        <p>
+            Emotion board
         </p>
 
     </footer>

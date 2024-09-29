@@ -2,6 +2,7 @@
 
 {% block head %}
 <script src="/static/js/main.js"></script>
+<script src="/static/js/loading.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -10,22 +11,26 @@
 
 <div id="pagination">
     {% if current_page > 1 %}
-    <a href="?page={{ current_page - 1 }}&per_page={{ per_page }}">Previous</a>
+    <a id="prev" href="?page={{ current_page - 1 }}&per_page={{ per_page }}">Previous</a>
     {% else %}
-        <span>Previous</span>
+    <span>Previous</span>
     {% endif %}
 
     <span>Page {{ current_page }} of {{ total_pages }}</span>
 
-    {% if current_page < total_pages %} <a href="?page={{ current_page + 1 }}&per_page={{ per_page }}">Next</a>
+    {% if current_page < total_pages %} 
+    <a id="next" href="?page={{ current_page + 1 }}&per_page={{ per_page }}">Next</a>
     {% else %}
-        <span>Next</span>
+    <span>Next</span>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
+    LoadingManager.showLoading(['content', 'posts', 'pagination']);
     preparePaginatedPage();
+    setupKeyboardNavigation();
+    LoadingManager.hideLoading();
 </script>
 {% endblock %}

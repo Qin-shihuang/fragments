@@ -20,7 +20,7 @@ function fetchAndDisplayPosts(page, perPage) {
                 const dateHeader = document.createElement('h2');
                 dateHeader.textContent = group.date;
                 postsDiv.appendChild(dateHeader);
-                
+
                 const ul = document.createElement('ul');
                 group.posts.forEach(post => ul.appendChild(createPostElement(post)));
                 postsDiv.appendChild(ul);
@@ -36,17 +36,38 @@ function fetchAndDisplayPosts(page, perPage) {
 function createPostElement(post) {
     const li = document.createElement('li');
     li.className = 'post-container';
-    
+
     const postLink = document.createElement('a');
     postLink._href = `/post/${post.id}`;
     postLink.className = 'post-item';
     postLink.innerHTML = `<span>${post.sentence}</span>`;
-    
+
     postLink.addEventListener('click', (event) => {
         event.preventDefault();
         window.location.href = postLink._href;
     });
-    
+
     li.appendChild(postLink);
     return li;
+}
+
+function handleKeyboardNavigation(event) {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+
+        let link;
+        if (event.key === 'ArrowLeft') {
+            link = document.getElementById('prev');
+        } else if (event.key === 'ArrowRight') {
+            link = document.getElementById('next');
+        }
+
+        if (link && link.href) {
+            window.location.href = link.href;
+        }
+    }
+}
+
+function setupKeyboardNavigation() {
+    document.addEventListener('keydown', handleKeyboardNavigation);
 }
