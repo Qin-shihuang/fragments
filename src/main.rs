@@ -1,6 +1,10 @@
 use std::{net::SocketAddr, sync::Arc};
 
-use axum::{response::Redirect, routing::{get, post}, Router};
+use axum::{
+    response::Redirect,
+    routing::{get, post},
+    Router,
+};
 use models::AppState;
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
@@ -25,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::Config::new(config_path)?;
 
     let pool = db::create_pool(&config.db_url).await?;
-    db::init_schema(&pool).await?; 
+    db::init_schema(&pool).await?;
     let state = AppState {
         name: config.author.name,
         email: config.author.email,
@@ -36,7 +40,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/", get(|| async { Redirect::temporary("/paginated") }))
         .route("/all", get(handler::all_posts))
         .route("/paginated", get(handler::paginated_posts))
-        .route("/date/:date", get(handler::get_date_posts))        
+        .route("/date/:date", get(handler::get_date_posts))
         .route("/post/:id", get(handler::single_post))
         .route("/post/:id/raw", get(handler::single_post_raw))
         .route("/add_post", get(handler::add_post_form))
@@ -47,9 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
-    let listener = tokio::net::TcpListener::bind(SocketAddr::new(config.host, config.port))
-        .await?;
-    axum::serve(listener, app.into_make_service())
-        .await?;
+    let listener = tokio::net::TcpListener::bind(SocketAddr::new(config.host, config.port)).await?;
+    axum::serve(listener, app.into_make_service()).await?;
     Ok(())
 }

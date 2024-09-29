@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
+use chrono::{DateTime, Local};
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::FromRow;
-use chrono::{DateTime, Local};
 use tokio::sync::Mutex;
 
 use crate::db::DbPool;
