@@ -43,6 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/posts", get(handler::fetch_grouped_posts))
         .route("/api/posts/:date", get(handler::fetch_date_posts))
         .route("/api/new_post", post(handler::new_post))
+        .route("/teapot", get(handler::teapot))
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
