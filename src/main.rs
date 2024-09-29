@@ -10,6 +10,11 @@ use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
 
 mod config;
+#[cfg(feature = "postgres")]
+#[path = "db_postgres.rs"]
+mod db;
+#[cfg(not(feature = "postgres"))]
+#[path = "db_sqlite.rs"]
 mod db;
 mod handler;
 mod models;
@@ -29,7 +34,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::Config::new(config_path)?;
 
     let pool = db::create_pool(&config.db_url).await?;
-    db::init_schema(&pool).await?;
     let state = AppState {
         name: config.author.name,
         email: config.author.email,

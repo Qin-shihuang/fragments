@@ -68,7 +68,6 @@ pub async fn single_post_raw(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> impl IntoResponse {
-    // return plaintext
     let pool = state.pool.lock().await;
     let post = get_post_by_id(&pool, id).await;
     if post.is_none() {
