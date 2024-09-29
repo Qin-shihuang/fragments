@@ -1,7 +1,7 @@
 function preparePaginatedPage() {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page') || 1;
-    const perPage = urlParams.get('per_page') || 10;
+    const perPage = urlParams.get('per_page') || 20;
     fetchAndDisplayPosts(page, perPage);
 }
 
