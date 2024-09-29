@@ -1,7 +1,19 @@
-function fetchAndDisplayAllPosts() {
-    fetch('/api/posts')
+function preparePaginatedPage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page') || 1;
+    const perPage = urlParams.get('per_page') || 10;
+    fetchAndDisplayPosts(page, perPage);
+}
+
+function fetchAndDisplayPosts(page, perPage) {
+    fetch(`/api/posts?page=${page}&per_page=${perPage}`)
         .then(response => response.json())
         .then(groupedPosts => {
+            if (!groupedPosts || groupedPosts.length === 0) {
+                const postsDiv = document.getElementById('posts');
+                postsDiv.innerHTML = '<p>No posts match the selected criteria.</p>';
+                return;
+            }
             const postsDiv = document.getElementById('posts');
             postsDiv.innerHTML = '';
             groupedPosts.forEach(group => {
@@ -23,14 +35,18 @@ function fetchAndDisplayAllPosts() {
 
 function createPostElement(post) {
     const li = document.createElement('li');
-    const div = document.createElement('div');
-    div.id = `post-${post.id}`;
-    div.className = 'post-item';
-    div.innerHTML = `<strong>${post.sentence}</strong>`;
-    div.style.cursor = 'pointer';
-    div.addEventListener('click', () => {
-        window.location.href = `/post/${post.id}`;
+    li.className = 'post-container';
+    
+    const postLink = document.createElement('a');
+    postLink._href = `/post/${post.id}`;
+    postLink.className = 'post-item';
+    postLink.innerHTML = `<span>${post.sentence}</span>`;
+    
+    postLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.location.href = postLink._href;
     });
-    li.appendChild(div);
+    
+    li.appendChild(postLink);
     return li;
 }

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="/static/js/main.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="posts">
+</div>
+
+<div id="pagination">
+    {% if current_page > 1 %}
+    <a href="?page={{ current_page - 1 }}&per_page={{ per_page }}">Previous</a>
+    {% else %}
+        <span>Previous</span>
+    {% endif %}
+
+    <span>Page {{ current_page }} of {{ total_pages }}</span>
+
+    {% if current_page < total_pages %} <a href="?page={{ current_page + 1 }}&per_page={{ per_page }}">Next</a>
+    {% else %}
+        <span>Next</span>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    preparePaginatedPage();
+</script>
+{% endblock %}

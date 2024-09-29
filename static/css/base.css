@@ -29,17 +29,15 @@ ul {
 
 li {
     margin-bottom: 1rem;
-    text-align: center;
+    text-align: left;
 }
 
 .post-item {
+    display: inline-block;
     cursor: default !important;
 }
 
-.post-item * {
-    cursor: default !important;
-}
-strong {
+span {
     color: #34495e;
     margin-bottom: 20px;
 }
@@ -57,3 +55,14 @@ footer p {
     margin: 0;
 }
 
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#pagination a,
+#pagination span {
+    margin: 0 10px;
+}

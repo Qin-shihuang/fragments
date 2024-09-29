@@ -1,8 +1,10 @@
-use crate::db::{add_post, get_post_by_id, get_posts};
-use crate::models::{AppState, GroupedPosts, PostForm};
-use crate::templates::{AddPostTemplate, AllPostsTemplate, SinglePostTemplate, TeapotTemplate};
+use crate::db::{add_post, get_post_by_id, get_post_count, get_posts, get_posts_by_page};
+use crate::models::{AppState, GroupedPosts, PaginationParams, PostForm};
+use crate::templates::{
+    AddPostTemplate, AllPostsTemplate, PaginatedPostsTemplate, SinglePostTemplate, TeapotTemplate,
+};
 
-use axum::extract::{Form, Path, State};
+use axum::extract::{Form, Path, Query, State};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Redirect};
 use axum::Json;
@@ -15,10 +17,26 @@ pub async fn all_posts(State(state): State<AppState>) -> impl IntoResponse {
     }
 }
 
-pub async fn single_post(
+pub async fn paginated_posts(
     State(state): State<AppState>,
-    Path(id): Path<i64>,
-) -> impl IntoResponse {
+    Query(params): Query<PaginationParams>,
+) -> Result<PaginatedPostsTemplate, (StatusCode, String)> {
+    let page = params.page.unwrap_or(1);
+    let per_page = params.per_page.unwrap_or(20);
+    let pool = state.pool.lock().await;
+    let total_posts = get_post_count(&pool).await;
+
+    let total_pages = (total_posts as f64 / per_page as f64).ceil() as u32;
+    Ok(PaginatedPostsTemplate {
+        name: state.name,
+        email: state.email,
+        current_page: page,
+        total_pages: total_pages as i64,
+        per_page,
+    })
+}
+
+pub async fn single_post(State(state): State<AppState>, Path(id): Path<i64>) -> impl IntoResponse {
     let pool = state.pool.lock().await;
     let post = get_post_by_id(&pool, id).await;
     let status = if post.is_some() {
@@ -36,9 +54,20 @@ pub async fn single_post(
     )
 }
 
-pub async fn fetch_grouped_posts(State(state): State<AppState>) -> Json<Vec<GroupedPosts>> {
+pub async fn fetch_grouped_posts(
+    State(state): State<AppState>,
+    Query(params): Query<PaginationParams>,
+) -> Json<Vec<GroupedPosts>> {
+    let page = params.page.unwrap_or(1);
+    let per_page = params.per_page.unwrap_or(0);
+
     let pool = state.pool.lock().await;
-    let posts = get_posts(&pool).await;
+    
+    let posts = if per_page > 0 {
+        get_posts_by_page(&pool, page, per_page).await
+    } else {
+        get_posts(&pool).await
+    };
 
     let mut grouped = BTreeMap::new();
     for post in posts {

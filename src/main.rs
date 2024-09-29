@@ -1,6 +1,6 @@
 use std::{net::SocketAddr, sync::Arc};
 
-use axum::{routing::{get, post}, Router};
+use axum::{response::Redirect, routing::{get, post}, Router};
 use models::AppState;
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
@@ -33,6 +33,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let app = Router::new()
+        .route("/", get(|| async { Redirect::temporary("/paginated") }))
+        .route("/paginated", get(handler::paginated_posts))
         .route("/all", get(handler::all_posts))
         .route("/post/:id", get(handler::single_post))
         .route("/add_post", get(handler::add_post_form))

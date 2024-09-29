@@ -33,3 +33,8 @@ pub struct PostForm {
     pub sentence: String,
 }
 
+#[derive(Deserialize)]
+pub struct PaginationParams {
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
+}

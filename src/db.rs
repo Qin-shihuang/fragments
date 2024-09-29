@@ -68,3 +68,11 @@ pub async fn get_post_by_id(pool: &SqlitePool, id: i64) -> Option<Post> {
         .await
         .expect("Failed to fetch post.")
 }
+
+pub async fn get_post_count(pool: &SqlitePool) -> i64 {
+    let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
+        .fetch_one(pool)
+        .await
+        .expect("Failed to fetch post count.");
+    count.0
+}

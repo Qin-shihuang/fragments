@@ -27,3 +27,13 @@ pub struct SinglePostTemplate {
     pub email: String,
     pub post: Option<Post>,
 }
+
+#[derive(Template)]
+#[template(path = "paginated_posts.html")]
+pub struct PaginatedPostsTemplate {
+    pub name: String,
+    pub email: String,
+    pub current_page: i64,
+    pub total_pages: i64,
+    pub per_page: i64,
+}
