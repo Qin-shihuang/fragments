@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Fragments - Post #{{ post.id }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/post.css">
+{% endblock %}
+
+{% block content %}
+{% if let Some(post) = post %}
+<article>
+    <h2>Post #{{ post.id }}</h2>
+    <p class="post-content">{{ post.sentence }}</p>
+    <p class="post-time">{{ post.timestamp }}</p>
+</article>
+{% else %}
+<p>Post not found. -- Probably deleted or never existed.</p>
+{% endif %}
+
+{% block scripts %}
+<script>
+    if (history.length <= 1) {
+        document.querySelector('.go-back').href = '/all';
+        document.querySelector('.go-back').onclick = null;
+    }
+</script>
+{% endblock %}
+
+<div class="go-back-container">
+    <a href="#" class="go-back" onclick="history.back(); return false;">Go back</a>
+</div>
+{% endblock %}

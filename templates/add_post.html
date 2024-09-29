@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a New Post</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/add_post.css">
+    <style>
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>New Post</h1>
+    {% if let Some(error) = error_message %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+    <form action='/api/new_post' method='post'>
+        <input type='text' name='sentence' placeholder='Write something' required>
+        <button type='submit'>Post</button>
+    </form>
+    <a href='/'>Go back to fragments</a>
+</body>
+
+</html>

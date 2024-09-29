@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fragments</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    {% block head %}{% endblock %}
+
+</head>
+
+<body>
+    <h1>Fragments</h1>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+    {% block scripts %}{% endblock %}
+    <footer>
+        <p>
+            Fragments of {{name}}<{{email}}>
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

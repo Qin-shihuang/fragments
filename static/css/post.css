@@ -1,0 +1,24 @@
+article {
+    margin-bottom: 10px;
+}
+
+.post-content {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.post-time {
+    color: #888;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+.go-back {
+    cursor: pointer;
+    color: #3498db;
+    text-decoration: underline;
+}
+
+.go-back-container {
+    margin-top: -10px;
+}
