@@ -165,12 +165,22 @@ pub async fn new_post(
     let pool = state.pool.lock().await;
     if let Some(public_key) = &state.public_key {
         if let Some(signature) = &input.signature {
-            if !verify_signature(public_key, &input.sentence, signature) {
-                return AddPostTemplate {
-                    error_message: Some("Signature verification failed.".to_string()),
-                    keyid: state.public_key.as_ref().map(get_keyid_string),
+            // if !verify_signature(public_key, &input.sentence, signature) {
+            //     return AddPostTemplate {
+            //         error_message: Some("Signature verification failed.".to_string()),
+            //         keyid: state.public_key.as_ref().map(get_keyid_string),
+            //     }
+            //     .into_response();
+            // }
+            match verify_signature(public_key, &input.sentence, signature) {
+                Ok(_) => {}
+                Err(e) => {
+                    return AddPostTemplate {
+                        error_message: Some(e),
+                        keyid: state.public_key.as_ref().map(get_keyid_string),
+                    }
+                    .into_response();
                 }
-                .into_response();
             }
         } else {
             return AddPostTemplate {
