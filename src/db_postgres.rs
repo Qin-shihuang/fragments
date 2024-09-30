@@ -73,7 +73,7 @@ pub async fn search_posts(pool: &PgPool, query: &str) -> Result<Vec<Post>, sqlx:
     sqlx::query_as::<_, Post>(
         "SELECT id, sentence, timestamp
         FROM posts
-        WHERE search_vector @@ websearch_to_tsquery('chinese', $1)
+        WHERE show_in_list = TRUE AND search_vector @@ websearch_to_tsquery('chinese', $1)
         ORDER BY ts_rank_cd(search_vector, websearch_to_tsquery('chinese', $1)) DESC",
     )
     .bind(query)
