@@ -13,6 +13,11 @@ function prepareAllPostsPage() {
 
 function prepareDatePostsPage() {
     const date = window.location.pathname.split('/').pop();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || isNaN(new Date(date))) {
+        const postsDiv = document.getElementById('posts');
+        postsDiv.innerHTML = '<center>Invalid date format.</center>';
+        return;
+    }
     const source = `/api/posts/${date}`;
     fetchAndDisplayPosts(source);
 }
@@ -23,7 +28,7 @@ function fetchAndDisplayPosts(source) {
         .then(groupedPosts => {
             if (!groupedPosts || groupedPosts.length === 0) {
                 const postsDiv = document.getElementById('posts');
-                postsDiv.innerHTML = '<p>No posts match the selected criteria.</p>';
+                postsDiv.innerHTML = '<center>No posts match the selected criteria.</center>';
                 return;
             }
             const postsDiv = document.getElementById('posts');
@@ -52,7 +57,7 @@ function fetchAndDisplayPosts(source) {
         .catch(error => {
             console.error('Error fetching posts:', error);
             const postsDiv = document.getElementById('posts');
-            postsDiv.innerHTML = '<p>Error loading posts. Please try again later.</p>';
+            postsDiv.innerHTML = '<center>Error loading posts. Please try again later.</center>';
         });
 }
 

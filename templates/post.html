@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
-{% block title %}Fragments - Post #{{ post.id }}{% endblock %}
+{% block title %}
+{% if let Some(post) = post %}
+<title>Fragments - #{{ post.id }}</title>
+{% else %}
+<title>Fragments - 404</title>
+{% endif %}
+{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" href="/static/css/post.css">

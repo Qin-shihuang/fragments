@@ -3,8 +3,7 @@ use crate::db::{
 };
 use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, SearchParams};
 use crate::templates::{
-    AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
-    SinglePostTemplate, TeapotTemplate,
+    AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate, SearchResultTemplate, SinglePostTemplate, TeapotTemplate
 };
 
 use axum::extract::{Form, Path, Query, State};
@@ -39,8 +38,15 @@ pub async fn paginated_posts(
     }
 }
 
-pub async fn get_date_posts(State(state): State<AppState>, _: Path<String>) -> DatePostsTemplate {
+pub async fn date_posts(State(state): State<AppState>, _: Path<String>) -> DatePostsTemplate {
     DatePostsTemplate {
+        name: state.name,
+        email: state.email,
+    }
+}
+
+pub async fn search_result(State(state): State<AppState>, _: Option<Query<SearchParams>>) -> SearchResultTemplate {
+    SearchResultTemplate {
         name: state.name,
         email: state.email,
     }

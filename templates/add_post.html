@@ -22,15 +22,15 @@
     {% endif %}
     <form action='/api/new_post' method='post'>
         <input type='text' name='sentence' placeholder='Write something' required>
-        <input type='checkbox' name='show' value='true' id='show-checkbox' checked>
         <input type='hidden' name='show' value='false' id='show-hidden' disabled>
         <script>
-            document.getElementById('show-checkbox').addEventListener('change', function() {
+            document.getElementById('show-checkbox').addEventListener('change', function () {
                 document.getElementById('show-hidden').disabled = this.checked;
             });
         </script>
-        <label for='show'>Display on main page</label>
         <button type='submit'>Post</button>
+        <input type='checkbox' name='show' value='true' id='show-checkbox' checked>
+        <label for='show'>Display on main page</label>
     </form>
     <a href='/'>Go back to fragments</a>
 </body>

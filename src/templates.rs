@@ -27,6 +27,13 @@ pub struct DatePostsTemplate {
 }
 
 #[derive(Template)]
+#[template(path = "search_result.html")]
+pub struct SearchResultTemplate {
+    pub name: String,
+    pub email: String,
+}
+
+#[derive(Template)]
 #[template(path = "post.html")]
 pub struct SinglePostTemplate {
     pub name: String,

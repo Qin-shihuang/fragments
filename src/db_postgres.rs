@@ -38,9 +38,12 @@ pub async fn get_posts_by_page(pool: &PgPool, page: i64, posts_per_page: i64) ->
 }
 
 pub async fn get_posts_by_date(pool: &PgPool, date: &str, tz: &str) -> Vec<Post> {
-    let parsed_date = NaiveDate::parse_from_str(date, "%Y-%m-%d")
-        .map_err(|e| sqlx::Error::Protocol(e.to_string()))
-        .unwrap();
+    let parsed_date = NaiveDate::parse_from_str(date, "%Y-%m-%d");
+    if let Err(e) = parsed_date {
+        eprintln!("Failed to parse date: {}", e);
+        return Vec::new();
+    }
+    let parsed_date = parsed_date.unwrap();
     sqlx::query_as::<_, Post>(
         "SELECT * FROM posts WHERE DATE(timestamp AT TIME ZONE $2) = $1 AND show_in_list = TRUE ORDER BY timestamp DESC",
     )
