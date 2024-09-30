@@ -31,6 +31,7 @@ pub struct GroupedPosts {
 #[derive(Deserialize)]
 pub struct PostForm {
     pub sentence: String,
+    pub show: bool,
 }
 
 #[derive(Deserialize)]

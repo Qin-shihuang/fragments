@@ -151,7 +151,7 @@ pub async fn new_post(
     Form(input): Form<PostForm>,
 ) -> impl IntoResponse {
     let pool = state.pool.lock().await;
-    match add_post(&pool, &input.sentence).await {
+    match add_post(&pool, &input.sentence, input.show).await {
         Ok(id) => Redirect::to(&format!("/post/{}", id)).into_response(),
         Err(e) => {
             let error_message = format!("Failed to add post: {}", e);

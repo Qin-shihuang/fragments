@@ -11,9 +11,10 @@ pub async fn create_pool(db_url: &str) -> Result<PgPool, sqlx::Error> {
         .await
 }
 
-pub async fn add_post(pool: &PgPool, sentence: &str) -> Result<i64, sqlx::Error> {
-    let result: i64 = sqlx::query_scalar("INSERT INTO posts (sentence) VALUES ($1) RETURNING id")
+pub async fn add_post(pool: &PgPool, sentence: &str, show: bool) -> Result<i64, sqlx::Error> {
+    let result: i64 = sqlx::query_scalar("INSERT INTO posts (sentence, show_in_list) VALUES ($1, $2) RETURNING id")
         .bind(sentence)
+        .bind(show)
         .fetch_one(pool)
         .await?;
 
@@ -21,14 +22,14 @@ pub async fn add_post(pool: &PgPool, sentence: &str) -> Result<i64, sqlx::Error>
 }
 
 pub async fn get_all_posts(pool: &PgPool) -> Vec<Post> {
-    sqlx::query_as::<_, Post>("SELECT * FROM posts ORDER BY timestamp DESC")
+    sqlx::query_as::<_, Post>("SELECT * FROM posts WHERE show_in_list = TRUE ORDER BY timestamp DESC")
         .fetch_all(pool)
         .await
         .expect("Failed to fetch posts.")
 }
 
 pub async fn get_posts_by_page(pool: &PgPool, page: i64, posts_per_page: i64) -> Vec<Post> {
-    sqlx::query_as::<_, Post>("SELECT * FROM posts ORDER BY timestamp DESC LIMIT $1 OFFSET $2")
+    sqlx::query_as::<_, Post>("SELECT * FROM posts WHERE show_in_list = TRUE ORDER BY timestamp DESC LIMIT $1 OFFSET $2")
         .bind(posts_per_page)
         .bind((page - 1) * posts_per_page)
         .fetch_all(pool)
@@ -41,7 +42,7 @@ pub async fn get_posts_by_date(pool: &PgPool, date: &str, tz: &str) -> Vec<Post>
         .map_err(|e| sqlx::Error::Protocol(e.to_string()))
         .unwrap();
     sqlx::query_as::<_, Post>(
-        "SELECT * FROM posts WHERE DATE(timestamp AT TIME ZONE $2) = $1 ORDER BY timestamp DESC",
+        "SELECT * FROM posts WHERE DATE(timestamp AT TIME ZONE $2) = $1 AND show_in_list = TRUE ORDER BY timestamp DESC",
     )
     .bind(parsed_date)
     .bind(tz)
@@ -69,8 +70,8 @@ pub async fn search_posts(pool: &PgPool, query: &str) -> Result<Vec<Post>, sqlx:
     sqlx::query_as::<_, Post>(
         "SELECT id, sentence, timestamp
         FROM posts
-        WHERE search_vector @@ to_tsquery('chinese', $1)
-        ORDER BY ts_rank(search_vector, to_tsquery('chinese', $1)) DESC",
+        WHERE search_vector @@ websearch_to_tsquery('chinese', $1)
+        ORDER BY ts_rank_cd(search_vector, websearch_to_tsquery('chinese', $1)) DESC",
     )
     .bind(query)
     .fetch_all(pool)
