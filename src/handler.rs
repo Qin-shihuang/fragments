@@ -1,7 +1,7 @@
 use crate::db::{
-    add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page,
+    add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page, search_posts,
 };
-use crate::models::{AppState, GroupedPosts, PaginationParams, PostForm};
+use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, SearchParams};
 use crate::templates::{
     AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
     SinglePostTemplate, TeapotTemplate,
@@ -129,12 +129,21 @@ pub async fn fetch_date_posts(
 ) -> Json<Vec<GroupedPosts>> {
     let pool = state.pool.lock().await;
     let date = date.to_string().trim().to_string();
-    let posts = get_posts_by_date(&pool, &date).await;
+    let posts = get_posts_by_date(&pool, &date, &state.tz).await;
     if posts.is_empty() {
         Json(Vec::new())
     } else {
         Json(vec![GroupedPosts { date, posts }])
     }
+}
+
+pub async fn fetch_search_result(
+    State(state): State<AppState>,
+    Query(params): Query<SearchParams>
+) -> Json<Vec<Post>> {
+    let pool = state.pool.lock().await;
+    let posts = search_posts(&pool, &params.query).await.unwrap_or_default();
+    Json(posts)
 }
 
 pub async fn new_post(

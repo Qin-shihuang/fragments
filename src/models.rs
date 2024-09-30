@@ -4,15 +4,15 @@ use chrono::{DateTime, Local};
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::FromRow;
+use sqlx::PgPool;
 use tokio::sync::Mutex;
-
-use crate::db::DbPool;
 
 #[derive(Clone)]
 pub struct AppState {
     pub name: String,
     pub email: String,
-    pub pool: Arc<Mutex<DbPool>>,
+    pub tz: String,
+    pub pool: Arc<Mutex<PgPool>>,
 }
 
 #[derive(FromRow, Serialize)]
@@ -37,4 +37,9 @@ pub struct PostForm {
 pub struct PaginationParams {
     pub page: Option<i64>,
     pub per_page: Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchParams {
+    pub query: String,
 }

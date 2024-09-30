@@ -37,6 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let state = AppState {
         name: config.author.name,
         email: config.author.email,
+        tz: config.timezone,
         pool: Arc::new(Mutex::new(pool)),
     };
 
@@ -50,6 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/add_post", get(handler::add_post_form))
         .route("/api/posts", get(handler::fetch_grouped_posts))
         .route("/api/posts/:date", get(handler::fetch_date_posts))
+        .route("/api/search", get(handler::fetch_search_result))
         .route("/api/new_post", post(handler::new_post))
         .route("/teapot", get(handler::teapot))
         .fallback(get(handler::teapot))

@@ -16,7 +16,7 @@
     </div>
     <hr>
     <p class="post-content">{{ post.sentence }}</p>
-    <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time()) }}</p>
+    <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time().format("%H:%M:%S") ) }}</p>
 </article>
 {% else %}
 <p>Post not found. -- Probably deleted or never existed.</p>

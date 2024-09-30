@@ -7,7 +7,7 @@ pub struct Config {
     pub port: u16,
     #[serde(rename = "database_url")]
     pub db_url: String,
-
+    pub timezone: String,
     pub author: Author,
 }
 
