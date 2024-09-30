@@ -16,7 +16,7 @@ pub struct Config {
 pub struct Author {
     pub name: String,
     pub email: String,
-} 
+}
 
 impl Config {
     pub fn new(file: &str) -> Result<Self, Box<dyn Error>> {

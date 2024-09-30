@@ -3,11 +3,11 @@ use crate::db::{
     search_posts,
 };
 use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, SearchParams};
-use crate::verify::{get_keyid_string, verify_signature};
 use crate::templates::{
     AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
     SearchResultTemplate, SinglePostTemplate, TeapotTemplate,
 };
+use crate::verify::{get_keyid_string, verify_signature};
 
 use axum::extract::{Form, Path, Query, State};
 use axum::http::StatusCode;

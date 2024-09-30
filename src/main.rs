@@ -19,8 +19,8 @@ mod db;
 mod db;
 mod handler;
 mod models;
-mod verify;
 mod templates;
+mod verify;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Some(key)
     } else {
         None
-    }; 
+    };
     let pool = db::create_pool(&config.db_url).await?;
     let state = AppState {
         name: config.author.name,
