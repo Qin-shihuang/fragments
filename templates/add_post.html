@@ -14,7 +14,12 @@
     <div class="error-message">{{ error }}</div>
     {% endif %}
     <form action='/api/new_post' method='post'>
-        <textarea name='sentence' placeholder='Write something (multiple lines allowed)' required></textarea>
+        <textarea name='sentence' placeholder='Write something...' required></textarea>
+        {% if let Some(keyid) = keyid %}
+        <textarea name='signature'
+            placeholder='Ascii-armored gpg signature of the sentence by {{ keyid }} \n-----BEGIN PGP SIGNATURE-----\n......'
+            required></textarea>
+        {% endif %}
         <div class="form-actions">
             <button type='submit'>Post</button>
             <div class="checkbox-container">
@@ -27,13 +32,18 @@
     <a href='/'>Go back to fragments</a>
 
     <script>
-        const textarea = document.querySelector('textarea');
-        textarea.addEventListener('input', autoResize, false);
+        var textAreas = document.getElementsByTagName('textarea');
 
         function autoResize() {
             this.style.height = 'auto';
             this.style.height = this.scrollHeight + 'px';
         }
+
+        Array.prototype.forEach.call(textAreas, function (elem) {
+            elem.placeholder = elem.placeholder.replace(/\\n/g, '\n');
+            elem.addEventListener('input', autoResize, false);
+
+        });
     </script>
     <script>
         document.getElementById('show-checkbox').addEventListener('change', function () {

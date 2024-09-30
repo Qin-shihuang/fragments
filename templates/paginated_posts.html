@@ -16,7 +16,7 @@
     <span>Prev</span>
     {% endif %}
 
-    <span> {{ current_page }} of {{ total_pages }}</span>
+    <span>{{ current_page }} of {{ total_pages }}</span>
 
     {% if current_page < total_pages %} 
     <a id="next" href="?page={{ current_page + 1 }}&per_page={{ per_page }}">Next</a>

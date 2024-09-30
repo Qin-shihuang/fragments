@@ -1,4 +1,4 @@
-use std::{net::SocketAddr, sync::Arc};
+use std::{fs::File, net::SocketAddr, sync::Arc};
 
 use axum::{
     response::Redirect,
@@ -6,6 +6,7 @@ use axum::{
     Router,
 };
 use models::AppState;
+use pgp::Deserializable;
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
 
@@ -18,6 +19,7 @@ mod db;
 mod db;
 mod handler;
 mod models;
+mod verify;
 mod templates;
 
 #[tokio::main]
@@ -32,12 +34,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     };
     let config = config::Config::new(config_path)?;
-
+    let public_key = if let Some(public_key_path) = config.public_key {
+        let (key, _) = pgp::SignedPublicKey::from_armor_single(File::open(public_key_path)?)?;
+        Some(key)
+    } else {
+        None
+    }; 
     let pool = db::create_pool(&config.db_url).await?;
     let state = AppState {
         name: config.author.name,
         email: config.author.email,
         tz: config.timezone,
+        public_key,
         pool: Arc::new(Mutex::new(pool)),
     };
 

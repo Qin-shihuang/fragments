@@ -1,9 +1,12 @@
 use crate::db::{
-    add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page, search_posts,
+    add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page,
+    search_posts,
 };
 use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, SearchParams};
+use crate::verify::{get_keyid_string, verify_signature};
 use crate::templates::{
-    AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate, SearchResultTemplate, SinglePostTemplate, TeapotTemplate
+    AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
+    SearchResultTemplate, SinglePostTemplate, TeapotTemplate,
 };
 
 use axum::extract::{Form, Path, Query, State};
@@ -45,7 +48,10 @@ pub async fn date_posts(State(state): State<AppState>, _: Path<String>) -> DateP
     }
 }
 
-pub async fn search_result(State(state): State<AppState>, _: Option<Query<SearchParams>>) -> SearchResultTemplate {
+pub async fn search_result(
+    State(state): State<AppState>,
+    _: Option<Query<SearchParams>>,
+) -> SearchResultTemplate {
     SearchResultTemplate {
         name: state.name,
         email: state.email,
@@ -145,7 +151,7 @@ pub async fn fetch_date_posts(
 
 pub async fn fetch_search_result(
     State(state): State<AppState>,
-    Query(params): Query<SearchParams>
+    Query(params): Query<SearchParams>,
 ) -> Json<Vec<Post>> {
     let pool = state.pool.lock().await;
     let posts = search_posts(&pool, &params.query).await.unwrap_or_default();
@@ -157,21 +163,40 @@ pub async fn new_post(
     Form(input): Form<PostForm>,
 ) -> impl IntoResponse {
     let pool = state.pool.lock().await;
+    if let Some(public_key) = &state.public_key {
+        if let Some(signature) = &input.signature {
+            if !verify_signature(public_key, &input.sentence, signature) {
+                return AddPostTemplate {
+                    error_message: Some("Signature verification failed.".to_string()),
+                    keyid: state.public_key.as_ref().map(get_keyid_string),
+                }
+                .into_response();
+            }
+        } else {
+            return AddPostTemplate {
+                error_message: Some("Signature is required.".to_string()),
+                keyid: state.public_key.as_ref().map(get_keyid_string),
+            }
+            .into_response();
+        }
+    }
     match add_post(&pool, &input.sentence, input.show).await {
         Ok(id) => Redirect::to(&format!("/post/{}", id)).into_response(),
         Err(e) => {
             let error_message = format!("Failed to add post: {}", e);
             AddPostTemplate {
                 error_message: Some(error_message),
+                keyid: state.public_key.as_ref().map(get_keyid_string),
             }
             .into_response()
         }
     }
 }
 
-pub async fn add_post_form() -> impl IntoResponse {
+pub async fn add_post_form(State(state): State<AppState>) -> impl IntoResponse {
     AddPostTemplate {
         error_message: None,
+        keyid: state.public_key.as_ref().map(get_keyid_string),
     }
 }
 

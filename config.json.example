@@ -3,6 +3,7 @@
     "port": 3000,
     "database_url": "sqlite://posts.db",
     "timezone": "UTC",
+    "public_key": "/path/to/public.asc",
     "author" : {
         "name": "",
         "email": ""

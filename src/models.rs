@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use chrono::{DateTime, Local};
+use pgp::SignedPublicKey;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::FromRow;
@@ -12,6 +13,7 @@ pub struct AppState {
     pub name: String,
     pub email: String,
     pub tz: String,
+    pub public_key: Option<SignedPublicKey>,
     pub pool: Arc<Mutex<PgPool>>,
 }
 
@@ -31,6 +33,7 @@ pub struct GroupedPosts {
 #[derive(Deserialize)]
 pub struct PostForm {
     pub sentence: String,
+    pub signature: Option<String>,
     pub show: bool,
 }
 

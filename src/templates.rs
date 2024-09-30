@@ -45,6 +45,7 @@ pub struct SinglePostTemplate {
 #[template(path = "add_post.html")]
 pub struct AddPostTemplate {
     pub error_message: Option<String>,
+    pub keyid: Option<String>,
 }
 
 #[derive(Template)]
