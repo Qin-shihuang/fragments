@@ -69,7 +69,9 @@ function createPostElement(post) {
     const postLink = document.createElement('a');
     postLink._href = `/post/${post.id}`;
     postLink.className = 'post-item';
-    postLink.innerHTML = `<span>${post.sentence}</span>`;
+    const postContent = document.createElement('span');
+    postContent.innerHTML = renderMultiLineText(post.sentence);
+    postLink.appendChild(postContent);
 
     postLink.addEventListener('click', (event) => {
         event.preventDefault();
@@ -78,6 +80,16 @@ function createPostElement(post) {
 
     li.appendChild(postLink);
     return li;
+}
+
+function renderMultiLineText(text) {
+    return text.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;')
+        .replace(/\n/g, '<br>')
+        .replace(/ /g, '&nbsp;');
 }
 
 function handleKeyboardNavigation(event) {

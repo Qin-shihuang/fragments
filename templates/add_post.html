@@ -4,15 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add a New Post</title>
-    <link rel="stylesheet" href="/static/css/base.css">
+    <title>New Post</title>
     <link rel="stylesheet" href="/static/css/add_post.css">
-    <style>
-        .error-message {
-            color: red;
-            margin-bottom: 10px;
-        }
-    </style>
 </head>
 
 <body>
@@ -21,18 +14,32 @@
     <div class="error-message">{{ error }}</div>
     {% endif %}
     <form action='/api/new_post' method='post'>
-        <input type='text' name='sentence' placeholder='Write something' required>
-        <input type='hidden' name='show' value='false' id='show-hidden' disabled>
-        <script>
-            document.getElementById('show-checkbox').addEventListener('change', function () {
-                document.getElementById('show-hidden').disabled = this.checked;
-            });
-        </script>
-        <button type='submit'>Post</button>
-        <input type='checkbox' name='show' value='true' id='show-checkbox' checked>
-        <label for='show'>Display on main page</label>
+        <textarea name='sentence' placeholder='Write something (multiple lines allowed)' required></textarea>
+        <div class="form-actions">
+            <button type='submit'>Post</button>
+            <div class="checkbox-container">
+                <input type='checkbox' name='show' value='true' id='show-checkbox' checked>
+                <input type='hidden' name='show' value='false' id='show-hidden' disabled>
+                <label for='show-checkbox'>Display on main page</label>
+            </div>
+        </div>
     </form>
     <a href='/'>Go back to fragments</a>
+
+    <script>
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', autoResize, false);
+
+        function autoResize() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        }
+    </script>
+    <script>
+        document.getElementById('show-checkbox').addEventListener('change', function () {
+            document.getElementById('show-hidden').disabled = this.checked;
+        });
+    </script>
 </body>
 
 </html>

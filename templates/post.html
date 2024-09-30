@@ -21,8 +21,10 @@
         <br style="clear:both;" />
     </div>
     <hr>
-    <p class="post-content">{{ post.sentence }}</p>
-    <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time().format("%H:%M:%S") ) }}</p>
+    <p id="rawContent" class="raw-content" style="display: none;">{{ post.sentence }}</p>
+    <p id="postContent" class="post-content"></p>
+    <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time().format("%H:%M:%S") ) }}
+    </p>
 </article>
 {% else %}
 <p>Post not found. -- Probably deleted or never existed.</p>
@@ -39,5 +41,22 @@
         document.querySelector('.go-back').href = '/all';
         document.querySelector('.go-back').onclick = null;
     }
+</script>
+<script>
+    function renderMultiLineText(text) {
+        return text.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/\n/g, '<br>')
+            .replace(/ /g, '&nbsp;');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const postContent = document.getElementById('postContent');
+        const rawContent = document.getElementById('rawContent').textContent;
+        postContent.innerHTML = renderMultiLineText(rawContent);
+    });
 </script>
 {% endblock %}
