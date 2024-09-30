@@ -3,22 +3,59 @@ function setupSearch() {
     const searchInput = document.getElementById('searchInput');
     const postsDiv = document.getElementById('posts');
 
+    const header = document.querySelector('.main-header');
+
+    let timeoutId;
+
+    function showSearchForm() {
+        clearTimeout(timeoutId);
+        searchForm.classList.add('visible');
+    }
+
+    function hideSearchForm() {
+        timeoutId = setTimeout(() => {
+            searchForm.classList.remove('visible');
+        }, 1000);
+    }
+
+    function handleMouseMove(e) {
+        const headerRect = header.getBoundingClientRect();
+        const distanceFromRight = headerRect.right - e.clientX;
+
+        if (distanceFromRight < 200) {
+            showSearchForm();
+        } else {
+            hideSearchForm();
+        }
+    }
+
+    function handleMouseLeave() {
+        hideSearchForm();
+    }
+
+    header.addEventListener('mousemove', (e) => {
+        const headerRect = header.getBoundingClientRect();
+        const distanceFromRight = headerRect.right - e.clientX;
+
+        if (distanceFromRight < 200) {
+            showSearchForm();
+        } else {
+            hideSearchForm();
+        }
+    });
+
+    header.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    searchForm.addEventListener('mouseenter', showSearchForm);
+    searchForm.addEventListener('mouseleave', hideSearchForm);
+
     searchForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
-            try {
-                const response = await fetch(`/api/search?query=${encodeURIComponent(searchTerm)}`);
-                const posts = await response.json();
-                displaySearchResultPage(searchTerm, posts);
-            } catch (error) {
-                console.error('Error searching posts:', error);
-                postsDiv.innerHTML = '<center>Error searching posts. Please try again later.</center>';
-            }
+            window.location.href = `/search?query=${encodeURIComponent(searchTerm)}`;
         } else {
-
-            // TODO: is this good?
-            postsDiv.innerHTML = '<center>No search term provided.</center>';
+            displaySearchResultPage(searchTerm, '');
         }
     });
 }
@@ -35,15 +72,17 @@ function prepareSearchResultPage() {
                 const postsDiv = document.getElementById('posts');
                 postsDiv.innerHTML = '<center>Error searching posts. Please try again later.</center>';
             });
-    } else {
-        const postsDiv = document.getElementById('posts');
-        postsDiv.innerHTML = '<center>No search term provided.</center>';
     }
 }
 
 function displaySearchResultPage(searchTerm, posts) {
     try {
         window.history.pushState({ posts }, '', '/search?query=' + encodeURIComponent(searchTerm));
+        if (!searchTerm) {
+            const postsDiv = document.getElementById('posts');
+            postsDiv.innerHTML = '<center>No search term provided.</center>';
+            return;
+        }
         if (!posts || posts.length === 0) {
             const postsDiv = document.getElementById('posts');
             postsDiv.innerHTML = '<center>No posts match the selected criteria.</center>';
@@ -54,7 +93,9 @@ function displaySearchResultPage(searchTerm, posts) {
         const dateHeader = document.createElement('h2');
         dateHeader.textContent = `Search results for: ${searchTerm}`;
         postsDiv.appendChild(dateHeader);
-        postsDiv.appendChild(document.createElement('hr'));
+        const hr = document.createElement('hr');
+        hr.className = 'h2-hr';
+        postsDiv.appendChild(hr);
         const ul = document.createElement('ul');
         posts.forEach(post => ul.appendChild(createPostElement(post)));
         postsDiv.appendChild(ul);

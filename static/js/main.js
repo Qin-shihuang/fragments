@@ -36,7 +36,8 @@ function fetchAndDisplayPosts(source) {
             groupedPosts.forEach(group => {
                 const dateHeader = document.createElement('h2');
                 const hr = document.createElement('hr');
-                const target = `/date/${group.date}`
+                hr.className = 'h2-hr';
+                const target = `/date/${group.date}`;
                 if (window.location.pathname !== target) {
                     const dateLink = document.createElement('a');
                     dateLink.href = target
