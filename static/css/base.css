@@ -17,10 +17,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 20px;
+    padding: 0px 0px;
 }
 
-.search-container {
+/* .search-container {
     position: absolute;
     right: 20px;
     top: 50%;
@@ -55,11 +55,11 @@ body {
 
 .search-form button:hover {
     background-color: #2980b9;
-}
+} */
 
 h1 {
     color: #2c3e50;
-    text-align: center;
+    text-align: left;
     padding-bottom: 0px;
 }
 

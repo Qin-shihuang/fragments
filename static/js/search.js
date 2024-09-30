@@ -1,53 +1,6 @@
 function setupSearch() {
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
-    const postsDiv = document.getElementById('posts');
-
-    const header = document.querySelector('.main-header');
-
-    let timeoutId;
-
-    function showSearchForm() {
-        clearTimeout(timeoutId);
-        searchForm.classList.add('visible');
-    }
-
-    function hideSearchForm() {
-        timeoutId = setTimeout(() => {
-            searchForm.classList.remove('visible');
-        }, 1000);
-    }
-
-    function handleMouseMove(e) {
-        const headerRect = header.getBoundingClientRect();
-        const distanceFromRight = headerRect.right - e.clientX;
-
-        if (distanceFromRight < 200) {
-            showSearchForm();
-        } else {
-            hideSearchForm();
-        }
-    }
-
-    function handleMouseLeave() {
-        hideSearchForm();
-    }
-
-    header.addEventListener('mousemove', (e) => {
-        const headerRect = header.getBoundingClientRect();
-        const distanceFromRight = headerRect.right - e.clientX;
-
-        if (distanceFromRight < 200) {
-            showSearchForm();
-        } else {
-            hideSearchForm();
-        }
-    });
-
-    header.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    searchForm.addEventListener('mouseenter', showSearchForm);
-    searchForm.addEventListener('mouseleave', hideSearchForm);
 
     searchForm.addEventListener('submit', async (e) => {
         e.preventDefault();
