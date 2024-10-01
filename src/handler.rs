@@ -2,10 +2,10 @@ use crate::db::{
     add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page,
     search_posts,
 };
-use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, SearchParams};
+use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, PreviewParams, SearchParams};
 use crate::templates::{
     AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
-    SearchResultTemplate, SinglePostTemplate, TeapotTemplate,
+    PreviewPostTemplate, SearchResultTemplate, SinglePostTemplate, TeapotTemplate,
 };
 use crate::verify::{get_keyid_string, verify_signature};
 
@@ -71,6 +71,7 @@ pub async fn single_post(State(state): State<AppState>, Path(id): Path<i64>) -> 
         SinglePostTemplate {
             name: state.name,
             email: state.email,
+            tz: state.tz,
             post,
         },
     )
@@ -165,13 +166,6 @@ pub async fn new_post(
     let pool = state.pool.lock().await;
     if let Some(public_key) = &state.public_key {
         if let Some(signature) = &input.signature {
-            // if !verify_signature(public_key, &input.sentence, signature) {
-            //     return AddPostTemplate {
-            //         error_message: Some("Signature verification failed.".to_string()),
-            //         keyid: state.public_key.as_ref().map(get_keyid_string),
-            //     }
-            //     .into_response();
-            // }
             match verify_signature(public_key, &input.sentence, signature) {
                 Ok(_) => {}
                 Err(e) => {
@@ -207,6 +201,17 @@ pub async fn add_post_form(State(state): State<AppState>) -> impl IntoResponse {
     AddPostTemplate {
         error_message: None,
         keyid: state.public_key.as_ref().map(get_keyid_string),
+    }
+}
+
+pub async fn preview_post(
+    State(state): State<AppState>,
+    Form(input): Form<PreviewParams>,
+) -> impl IntoResponse {
+    PreviewPostTemplate {
+        name: state.name,
+        email: state.email,
+        is_from_add: input.add.unwrap_or(false),
     }
 }
 

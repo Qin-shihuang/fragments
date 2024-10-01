@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Post Preview</title>{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/post.css">
+<style>
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .preview-header h2 {
+        margin: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article>
+    <div class="preview-header">
+        <h2>Post Preview</h2>
+    </div>
+    <hr>
+    <p id="postContent" class="post-content"></p>
+    <p id="previewTimestamp" class="post-time"></p>
+</article>
+
+{% if is_from_add == true %}
+<div>
+    <a href="#" class="go-back" onclick="history.back(); return false;">Go back</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function renderMultiLineText(text) {
+        return text.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;')
+            .replace(/\n/g, '<br>')
+            .replace(/ /g, '&nbsp;');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const sentence = urlParams.get('sentence') || '';
+        const addParam = urlParams.get('add');
+
+        const postContent = document.getElementById('postContent');
+        postContent.innerHTML = renderMultiLineText(sentence);
+
+        const previewTimestamp = document.getElementById('previewTimestamp');
+        previewTimestamp.textContent = new Date().toISOString().replace('T', ' ').replace(/\.\d+Z/, '');
+    });
+</script>
+{% endblock %}

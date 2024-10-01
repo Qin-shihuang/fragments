@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-{% if let Some(post) = post %}
+{% if let (Some(post), tz) = (post.as_ref(), tz.as_ref()) %}
 <article>
     <div class="post-header">
         <h2>Post #{{ post.id }}</h2>
@@ -23,7 +23,7 @@
     <hr>
     <p id="rawContent" class="raw-content" style="display: none;">{{ post.sentence }}</p>
     <p id="postContent" class="post-content"></p>
-    <p class="post-time">{{ format!("{} {}", post.timestamp.date_naive(), post.timestamp.time().format("%H:%M:%S") ) }}
+    <p class="post-time">{{ format!("{} {}", post.host_date(&tz), post.host_time(&tz) ) }}
     </p>
 </article>
 {% else %}

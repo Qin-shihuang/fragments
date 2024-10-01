@@ -58,6 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/post/:id", get(handler::single_post))
         .route("/post/:id/raw", get(handler::single_post_raw))
         .route("/add_post", get(handler::add_post_form))
+        .route("/preview", get(handler::preview_post))
         .route("/api/posts", get(handler::fetch_grouped_posts))
         .route("/api/posts/:date", get(handler::fetch_date_posts))
         .route("/api/search", get(handler::fetch_search_result))

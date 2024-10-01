@@ -38,6 +38,7 @@ pub struct SearchResultTemplate {
 pub struct SinglePostTemplate {
     pub name: String,
     pub email: String,
+    pub tz: String,
     pub post: Option<Post>,
 }
 
@@ -46,6 +47,14 @@ pub struct SinglePostTemplate {
 pub struct AddPostTemplate {
     pub error_message: Option<String>,
     pub keyid: Option<String>,
+}
+
+#[derive(Template)]
+#[template(path = "preview_post.html")]
+pub struct PreviewPostTemplate {
+    pub name: String,
+    pub email: String,
+    pub is_from_add: bool,
 }
 
 #[derive(Template)]

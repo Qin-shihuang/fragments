@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use chrono::{DateTime, Local};
+use chrono::Utc;
+use chrono::DateTime;
+use chrono_tz::Tz;
 use pgp::SignedPublicKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -21,7 +23,19 @@ pub struct AppState {
 pub struct Post {
     pub id: i64,
     pub sentence: String,
-    pub timestamp: DateTime<Local>,
+    pub timestamp: DateTime<Utc>,
+}
+
+impl Post {
+    pub fn host_date(&self, tz: &str) -> String {
+        let tz: Tz = tz.parse().unwrap();
+        self.timestamp.with_timezone(&tz).format("%Y-%m-%d").to_string()
+    }
+
+    pub fn host_time(&self, tz: &str) -> String {
+        let tz: Tz = tz.parse().unwrap();
+        self.timestamp.with_timezone(&tz).format("%H:%M:%S").to_string()
+    }
 }
 
 #[derive(Serialize)]
@@ -46,4 +60,10 @@ pub struct PaginationParams {
 #[derive(Deserialize)]
 pub struct SearchParams {
     pub query: String,
+}
+
+#[derive(Deserialize)]
+
+pub struct PreviewParams {
+    pub add: Option<bool>,
 }

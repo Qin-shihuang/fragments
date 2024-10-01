@@ -29,7 +29,10 @@
             </div>
         </div>
     </form>
-    <a href='/'>Go back to fragments</a>
+    <div class="actions">
+        <a href='/'>Go back to fragments</a>
+        <a id='preview'>Preview</a>
+    </div>
 
     <script>
         var textAreas = document.getElementsByTagName('textarea');
@@ -44,6 +47,12 @@
             elem.addEventListener('input', autoResize, false);
 
         });
+
+        document.getElementById('preview').addEventListener('click', go2Preview);
+        function go2Preview() {
+            window.location.href = '/preview?sentence=' + encodeURIComponent(document.querySelector('textarea[name="sentence"]').value) + '&add=true';
+        }
+
     </script>
     <script>
         document.getElementById('show-checkbox').addEventListener('change', function () {

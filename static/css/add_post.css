@@ -84,8 +84,15 @@ label {
     color: #555;
 }
 
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 a {
     display: block;
+    cursor: pointer;
     text-align: center;
     margin-top: 20px;
     color: #3498db;
