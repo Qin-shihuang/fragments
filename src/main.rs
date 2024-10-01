@@ -6,7 +6,7 @@ use axum::{
     Router,
 };
 use models::AppState;
-use pgp::Deserializable;
+use pgp::{types::PublicKeyTrait, Deserializable};
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
 
@@ -36,6 +36,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = config::Config::new(config_path)?;
     let public_key = if let Some(public_key_path) = config.public_key {
         let (key, _) = pgp::SignedPublicKey::from_armor_single(File::open(public_key_path)?)?;
+        if !key.is_signing_key() {
+            eprintln!("The key is not a signing key, any signature cannot be verified.");
+            std::process::exit(1);
+        }
         Some(key)
     } else {
         None
