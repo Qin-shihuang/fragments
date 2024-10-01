@@ -112,6 +112,10 @@ li {
 .post-item {
     display: inline-block;
     cursor: default !important;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
 }
 
 span {

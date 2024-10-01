@@ -20,6 +20,10 @@ article {
 .post-content {
     font-size: 1.1em;
     margin-bottom: 10px;
+    white-space: pre-line;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .post-time {
