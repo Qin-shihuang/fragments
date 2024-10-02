@@ -5,8 +5,8 @@ use std::{error::Error, net::IpAddr};
 pub struct Config {
     pub host: IpAddr,
     pub port: u16,
-    #[serde(rename = "database_url")]
-    pub db_url: String,
+    pub database_url: String,
+    pub favicon: Option<String>,
     pub public_key: Option<String>,
     pub timezone: String,
     pub author: Author,

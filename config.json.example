@@ -3,6 +3,7 @@
     "port": 3000,
     "database_url": "postgres://username:password@localhost/fragments",
     "timezone": "UTC",
+    "favicon": "/path/to/favicon.ico",
     "public_key": "/path/to/public.asc",
     "author" : {
         "name": "",

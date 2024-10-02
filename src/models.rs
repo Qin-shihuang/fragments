@@ -15,6 +15,7 @@ pub struct AppState {
     pub name: String,
     pub email: String,
     pub tz: String,
+    pub favicon: Option<Vec<u8>>,
     pub public_key: Option<SignedPublicKey>,
     pub pool: Arc<Mutex<PgPool>>,
 }

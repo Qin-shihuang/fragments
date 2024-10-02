@@ -29,6 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     };
     let config = config::Config::new(config_path)?;
+    let favicon = config.favicon.and_then(|favicon| std::fs::read(&favicon).ok());
     let public_key = if let Some(public_key_path) = config.public_key {
         let (key, _) = pgp::SignedPublicKey::from_armor_single(File::open(public_key_path)?)?;
         if !key.is_signing_key() && !key.public_subkeys.iter().any(|k| k.is_signing_key()) {
@@ -39,11 +40,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         None
     };
-    let pool = db::create_pool(&config.db_url).await?;
+    let pool = db::create_pool(&config.database_url).await?;
     let state = AppState {
         name: config.author.name,
         email: config.author.email,
         tz: config.timezone,
+        favicon,
         public_key,
         pool: Arc::new(Mutex::new(pool)),
     };
