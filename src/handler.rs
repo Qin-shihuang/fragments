@@ -95,7 +95,7 @@ pub async fn single_post_raw(
             StatusCode::OK,
             {
                 let mut headers = axum::http::HeaderMap::new();
-                headers.insert("Content-Type", "text/plain".parse().unwrap());
+                headers.insert("Content-Type", "text/plain; charset=utf-8".parse().unwrap());
                 headers
             },
             post.unwrap().sentence,
