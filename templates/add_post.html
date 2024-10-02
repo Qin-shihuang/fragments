@@ -10,10 +10,8 @@
 
 <body>
     <h1>New Post</h1>
-    {% if let Some(error) = error_message %}
-    <div class="error-message">{{ error }}</div>
-    {% endif %}
-    <form action='/api/new_post' method='post'>
+    <div class="error-message" style="display: none;"></div>
+    <form id="post-form">
         <textarea name='sentence' placeholder='Write something...' required></textarea>
         {% if let Some(keyid) = keyid %}
         <textarea name='signature'
@@ -23,8 +21,7 @@
         <div class="form-actions">
             <button type='submit'>Post</button>
             <div class="checkbox-container">
-                <input type='checkbox' name='show' value='true' id='show-checkbox' checked>
-                <input type='hidden' name='show' value='false' id='show-hidden' disabled>
+                <input type='checkbox' name='show' value='on' id='show-checkbox' checked>
                 <label for='show-checkbox'>Display on main page</label>
             </div>
         </div>
@@ -45,7 +42,6 @@
         Array.prototype.forEach.call(textAreas, function (elem) {
             elem.placeholder = elem.placeholder.replace(/\\n/g, '\n');
             elem.addEventListener('input', autoResize, false);
-
         });
 
         document.getElementById('preview').addEventListener('click', go2Preview);
@@ -55,8 +51,42 @@
 
     </script>
     <script>
-        document.getElementById('show-checkbox').addEventListener('change', function () {
-            document.getElementById('show-hidden').disabled = this.checked;
+        document.getElementById('post-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+            var jsonData = {
+                sentence: formData.get('sentence'),
+                show: formData.get('show') === 'on'
+            };
+
+            const signature = formData.get('signature');
+            if (signature) {
+                jsonData.signature = signature;
+            }
+
+            fetch('/api/new_post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(jsonData),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = '/post/' + data.id;
+                    } else {
+                        document.querySelector('.error-message').innerText = data.error;
+                        document.querySelector('.error-message').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.querySelector('.error-message').innerText = 'An error occurred while submitting the post.';
+                    document.querySelector('.error-message').style.display = 'block';
+                });
         });
     </script>
 </body>

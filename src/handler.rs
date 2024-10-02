@@ -11,8 +11,9 @@ use crate::verify::{get_keyid_string, verify_signature};
 
 use axum::extract::{Form, Path, Query, State};
 use axum::http::StatusCode;
-use axum::response::{IntoResponse, Redirect};
+use axum::response::IntoResponse;
 use axum::Json;
+use serde_json::json;
 use std::collections::BTreeMap;
 
 pub async fn all_posts(State(state): State<AppState>) -> impl IntoResponse {
@@ -161,7 +162,7 @@ pub async fn fetch_search_result(
 
 pub async fn new_post(
     State(state): State<AppState>,
-    Form(input): Form<PostForm>,
+    Json(input): Json<PostForm>,
 ) -> impl IntoResponse {
     let pool = state.pool.lock().await;
     if let Some(public_key) = &state.public_key {
@@ -169,37 +170,54 @@ pub async fn new_post(
             match verify_signature(public_key, &input.sentence, signature) {
                 Ok(_) => {}
                 Err(e) => {
-                    return AddPostTemplate {
-                        error_message: Some(e),
-                        keyid: state.public_key.as_ref().map(get_keyid_string),
-                    }
-                    .into_response();
+                    return Json(
+                        json!(
+                            {
+                                "success": false,
+                                "error": e
+                            }
+                        )
+                    )
                 }
             }
         } else {
-            return AddPostTemplate {
-                error_message: Some("Signature is required.".to_string()),
-                keyid: state.public_key.as_ref().map(get_keyid_string),
-            }
-            .into_response();
+            return Json(
+                json!(
+                    {
+                        "success": false,
+                        "error": "Signature is required."
+                    }
+                )
+            )
         }
     }
     match add_post(&pool, &input.sentence, input.show).await {
-        Ok(id) => Redirect::to(&format!("/post/{}", id)).into_response(),
+        Ok(id) => {
+            Json(
+                json!(
+                    {
+                        "success": true,
+                        "id": id
+                    }
+                )
+            )
+        }
         Err(e) => {
             let error_message = format!("Failed to add post: {}", e);
-            AddPostTemplate {
-                error_message: Some(error_message),
-                keyid: state.public_key.as_ref().map(get_keyid_string),
-            }
-            .into_response()
+            Json(
+                json!(
+                    {
+                        "success": false,
+                        "error": error_message
+                    }
+                )
+            )
         }
     }
 }
 
 pub async fn add_post_form(State(state): State<AppState>) -> impl IntoResponse {
     AddPostTemplate {
-        error_message: None,
         keyid: state.public_key.as_ref().map(get_keyid_string),
     }
 }
