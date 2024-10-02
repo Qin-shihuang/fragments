@@ -118,6 +118,12 @@ li {
     max-width: 100%;
 }
 
+.post-inline-link {
+    cursor: pointer;
+    color: #3498db;
+    text-decoration: none;
+}
+
 span {
     color: #34495e;
     margin-bottom: 20px;

@@ -70,26 +70,20 @@ function createPostElement(post) {
     postLink._href = `/post/${post.id}`;
     postLink.className = 'post-item';
     const postContent = document.createElement('span');
-    postContent.innerHTML = renderMultiLineText(post.sentence);
+    postContent.innerHTML = renderPostContent(post.sentence);
     postLink.appendChild(postContent);
 
     postLink.addEventListener('click', (event) => {
-        event.preventDefault();
-        window.location.href = postLink._href;
+        if (event.target.tagName === 'A') {
+            event.stopPropagation();
+        } else {
+            event.preventDefault();
+            window.location.href = postLink._href;
+        }
     });
 
     li.appendChild(postLink);
     return li;
-}
-
-function renderMultiLineText(text) {
-    return text.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;')
-        .replace(/\n/g, '<br>')
-        .replace(/ /g, '&nbsp;');
 }
 
 function handleKeyboardNavigation(event) {

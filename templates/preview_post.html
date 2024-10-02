@@ -38,7 +38,7 @@
 
 {% block scripts %}
 <script>
-    function renderMultiLineText(text) {
+    function renderPostContent(text) {
         return text.replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
@@ -54,7 +54,7 @@
         const addParam = urlParams.get('add');
 
         const postContent = document.getElementById('postContent');
-        postContent.innerHTML = renderMultiLineText(sentence);
+        postContent.innerHTML = renderPostContent(sentence);
 
         const previewTimestamp = document.getElementById('previewTimestamp');
         previewTimestamp.textContent = new Date().toISOString().replace('T', ' ').replace(/\.\d+Z/, '');

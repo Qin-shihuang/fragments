@@ -8,7 +8,7 @@ use axum::{
 use models::AppState;
 use pgp::{types::PublicKeyTrait, Deserializable};
 use tokio::sync::Mutex;
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 
 mod config;
 mod db;
@@ -29,7 +29,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(1);
     };
     let config = config::Config::new(config_path)?;
-    let favicon = config.favicon.and_then(|favicon| std::fs::read(&favicon).ok());
     let public_key = if let Some(public_key_path) = config.public_key {
         let (key, _) = pgp::SignedPublicKey::from_armor_single(File::open(public_key_path)?)?;
         if !key.is_signing_key() && !key.public_subkeys.iter().any(|k| k.is_signing_key()) {
@@ -45,12 +44,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         name: config.author.name,
         email: config.author.email,
         tz: config.timezone,
-        favicon,
         public_key,
         pool: Arc::new(Mutex::new(pool)),
     };
 
-    let app = Router::new()
+    let mut app = Router::new()
         .route("/", get(|| async { Redirect::temporary("/paginated") }))
         .route("/all", get(handler::all_posts))
         .route("/paginated", get(handler::paginated_posts))
@@ -65,10 +63,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/search", get(handler::fetch_search_result))
         .route("/api/new_post", post(handler::new_post))
         .route("/teapot", get(handler::teapot))
-        .route("/favicon.ico", get(handler::favicon))
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
+    app = match config.favicon {
+        Some(path) => app.nest_service("/favicon.ico", ServeFile::new(path)),
+        None => app
+    };
     let listener = tokio::net::TcpListener::bind(SocketAddr::new(config.host, config.port)).await?;
     axum::serve(listener, app.into_make_service()).await?;
     Ok(())

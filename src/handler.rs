@@ -237,24 +237,3 @@ pub async fn teapot() -> impl IntoResponse {
         TeapotTemplate,
     )
 }
-
-pub async fn favicon(State(state): State<AppState>) -> impl IntoResponse {
-    match state.favicon {
-        Some(data) => (
-            StatusCode::OK,
-            {
-                let mut headers = axum::http::HeaderMap::new();
-                headers.insert("Content-Type", "image/x-icon".parse().unwrap());
-                headers.insert(
-                    "Cache-Control",
-                    "public, max-age=604800, immutable".parse().unwrap(),
-                );
-                headers
-            },
-            data.clone()
-        ).into_response(),
-        None => (
-            StatusCode::NOT_FOUND,
-        ).into_response()
-    }
-}

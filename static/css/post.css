@@ -26,6 +26,12 @@ article {
     hyphens: auto;
 }
 
+.post-inline-link {
+    cursor: pointer;
+    color: #3498db;
+    text-decoration: none;
+}
+
 .post-time {
     color: #888;
     font-size: 0.9em;
