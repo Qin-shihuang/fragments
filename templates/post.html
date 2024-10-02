@@ -55,6 +55,9 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const postContent = document.getElementById('postContent');
+        if (!postContent) {
+            return;
+        }
         const rawContent = document.getElementById('rawContent').textContent;
         postContent.innerHTML = renderMultiLineText(rawContent);
     });

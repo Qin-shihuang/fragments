@@ -11,11 +11,6 @@ use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
 
 mod config;
-#[cfg(feature = "postgres")]
-#[path = "db_postgres.rs"]
-mod db;
-#[cfg(not(feature = "postgres"))]
-#[path = "db_sqlite.rs"]
 mod db;
 mod handler;
 mod models;
@@ -68,6 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/search", get(handler::fetch_search_result))
         .route("/api/new_post", post(handler::new_post))
         .route("/teapot", get(handler::teapot))
+        .route("/favicon.ico", get(handler::favicon))
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);

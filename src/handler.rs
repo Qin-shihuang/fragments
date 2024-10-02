@@ -2,7 +2,9 @@ use crate::db::{
     add_post, get_all_posts, get_post_by_id, get_post_count, get_posts_by_date, get_posts_by_page,
     search_posts,
 };
-use crate::models::{AppState, GroupedPosts, PaginationParams, Post, PostForm, PreviewParams, SearchParams};
+use crate::models::{
+    AppState, GroupedPosts, PaginationParams, Post, PostForm, PreviewParams, SearchParams,
+};
 use crate::templates::{
     AddPostTemplate, AllPostsTemplate, DatePostsTemplate, PaginatedPostsTemplate,
     PreviewPostTemplate, SearchResultTemplate, SinglePostTemplate, TeapotTemplate,
@@ -102,6 +104,7 @@ pub async fn single_post_raw(
         )
     }
 }
+
 pub async fn fetch_grouped_posts(
     State(state): State<AppState>,
     Query(params): Query<PaginationParams>,
@@ -163,55 +166,45 @@ pub async fn fetch_search_result(
 pub async fn new_post(
     State(state): State<AppState>,
     Json(input): Json<PostForm>,
-) -> impl IntoResponse {
+) -> Json<serde_json::Value> {
     let pool = state.pool.lock().await;
     if let Some(public_key) = &state.public_key {
         if let Some(signature) = &input.signature {
             match verify_signature(public_key, &input.sentence, signature) {
                 Ok(_) => {}
                 Err(e) => {
-                    return Json(
-                        json!(
-                            {
-                                "success": false,
-                                "error": e
-                            }
-                        )
-                    )
+                    return Json(json!(
+                        {
+                            "success": false,
+                            "error": e
+                        }
+                    ))
                 }
             }
         } else {
-            return Json(
-                json!(
-                    {
-                        "success": false,
-                        "error": "Signature is required."
-                    }
-                )
-            )
+            return Json(json!(
+                {
+                    "success": false,
+                    "error": "Signature is required."
+                }
+            ));
         }
     }
     match add_post(&pool, &input.sentence, input.show).await {
-        Ok(id) => {
-            Json(
-                json!(
-                    {
-                        "success": true,
-                        "id": id
-                    }
-                )
-            )
-        }
+        Ok(id) => Json(json!(
+            {
+                "success": true,
+                "id": id
+            }
+        )),
         Err(e) => {
             let error_message = format!("Failed to add post: {}", e);
-            Json(
-                json!(
-                    {
-                        "success": false,
-                        "error": error_message
-                    }
-                )
-            )
+            Json(json!(
+                {
+                    "success": false,
+                    "error": error_message
+                }
+            ))
         }
     }
 }
@@ -242,5 +235,22 @@ pub async fn teapot() -> impl IntoResponse {
             headers
         },
         TeapotTemplate,
+    )
+}
+
+pub async fn favicon() -> impl IntoResponse {
+    (
+        StatusCode::OK,
+        {
+            let mut headers = axum::http::HeaderMap::new();
+            headers.insert("Content-Type", "image/x-icon".parse().unwrap());
+            headers.insert(
+                "Cache-Control",
+                "public, max-age=604800, immutable".parse().unwrap(),
+            );
+
+            headers
+        },
+        include_bytes!("../static/favicon.ico"),
     )
 }
