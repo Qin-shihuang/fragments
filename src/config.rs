@@ -6,7 +6,6 @@ pub struct Config {
     pub host: IpAddr,
     pub port: u16,
     pub database_url: String,
-    pub favicon: Option<String>,
     pub public_key: Option<String>,
     pub timezone: String,
     pub author: Author,

@@ -8,7 +8,7 @@ use axum::{
 use models::AppState;
 use pgp::{types::PublicKeyTrait, Deserializable};
 use tokio::sync::Mutex;
-use tower_http::services::{ServeDir, ServeFile};
+use tower_http::services::ServeDir;
 
 mod config;
 mod db;
@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         pool: Arc::new(Mutex::new(pool)),
     };
 
-    let mut app = Router::new()
+    let app = Router::new()
         .route("/", get(|| async { Redirect::temporary("/paginated") }))
         .route("/all", get(handler::all_posts))
         .route("/paginated", get(handler::paginated_posts))
@@ -66,10 +66,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .fallback(get(handler::teapot))
         .nest_service("/static", ServeDir::new("static"))
         .with_state(state);
-    app = match config.favicon {
-        Some(path) => app.nest_service("/favicon.ico", ServeFile::new(path)),
-        None => app
-    };
     let listener = tokio::net::TcpListener::bind(SocketAddr::new(config.host, config.port)).await?;
     axum::serve(listener, app.into_make_service()).await?;
     Ok(())
