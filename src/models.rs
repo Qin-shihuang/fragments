@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use chrono::Utc;
 use chrono::DateTime;
+use chrono::Utc;
 use chrono_tz::Tz;
 use pgp::SignedPublicKey;
 use serde::Deserialize;
@@ -29,12 +29,18 @@ pub struct Post {
 impl Post {
     pub fn host_date(&self, tz: &str) -> String {
         let tz: Tz = tz.parse().unwrap();
-        self.timestamp.with_timezone(&tz).format("%Y-%m-%d").to_string()
+        self.timestamp
+            .with_timezone(&tz)
+            .format("%Y-%m-%d")
+            .to_string()
     }
 
     pub fn host_time(&self, tz: &str) -> String {
         let tz: Tz = tz.parse().unwrap();
-        self.timestamp.with_timezone(&tz).format("%H:%M:%S").to_string()
+        self.timestamp
+            .with_timezone(&tz)
+            .format("%H:%M:%S")
+            .to_string()
     }
 }
 
