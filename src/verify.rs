@@ -10,10 +10,15 @@ pub fn verify_signature(key: &SignedPublicKey, data: &str, signature: &str) -> R
     if now - creation_time > chrono::Duration::minutes(20) {
         return Err("Signature is too old, use one signed within the last 20 minutes.".to_string());
     }
-    if let Err(e) = signature.verify(key, data) {
-        return Err(format!("Signature verification failed: {}", e));
+    if key.is_signing_key() && signature.verify(key, data).is_ok() {
+        return Ok(());
     }
-    Ok(())
+    for subkey in &key.public_subkeys {
+        if subkey.is_signing_key() && signature.verify(subkey, data).is_ok() {
+            return Ok(());
+        }
+    }
+    Err("Signature verification failed.".to_string())
 }
 
 pub fn get_keyid_string(key: &SignedPublicKey) -> String {
